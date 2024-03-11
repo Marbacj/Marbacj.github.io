@@ -133,10 +133,12 @@ Ribbon：
     <title>ProjectLearning2</title>
     <url>/2024/03/08/ProjectLearning2/</url>
     <content><![CDATA[<h1 id="广告投放系统"><a href="#广告投放系统" class="headerlink" title="广告投放系统"></a>广告投放系统</h1><hr>
-## 业务思想
 
 <h2 id="类"><a href="#类" class="headerlink" title="类"></a>类</h2><h3 id="CommonResponseAdvice"><a href="#CommonResponseAdvice" class="headerlink" title="CommonResponseAdvice"></a>CommonResponseAdvice</h3><p>将字段进行包装进行填充,规范化API返回格式：通过统一响应，可以定义API的返回格式，包括状态码、消息、数据等内容，使得不同的接口返回风格一致，提高了接口的可预测性和可读性。</p>
-<h3 id="JpaRepository的继承过程"><a href="#JpaRepository的继承过程" class="headerlink" title="JpaRepository的继承过程"></a>JpaRepository的继承过程</h3><h3 id="Feign和Hystrix"><a href="#Feign和Hystrix" class="headerlink" title="Feign和Hystrix"></a>Feign和Hystrix</h3><p></p>
+<h3 id="JpaRepository的继承过程"><a href="#JpaRepository的继承过程" class="headerlink" title="JpaRepository的继承过程"></a>JpaRepository的继承过程</h3><p><em><a href="https://bachman.top/2024/03/09/JpaStudy/">关于JpaRepository的继承过程</a></em></p>
+<h3 id="Feign和Hystrix"><a href="#Feign和Hystrix" class="headerlink" title="Feign和Hystrix"></a>Feign和Hystrix</h3><p>关于Feign和Hystrix的整合，可以参考以下文章：</br><br><em><a href="https://bachman.top/2024/03/09/FeignAndHystrix/">如何理解服务调用,阶段器和负载均衡</a></em></p>
+<h3 id="RESTful"><a href="#RESTful" class="headerlink" title="RESTful"></a>RESTful</h3><p>有关RESTful的介绍，可以参考以下文章：</br><br><em><a href="https://bachman.top/2024/03/09/SpringMVC/">浅谈restful</a></em> </p>
+<p></p>
 
 
 
@@ -145,8 +147,19 @@ Ribbon：
 <li>@Transactional,声明一个方法需要进行事务管理，并指定事务的隔离级别、传播行为和超时时间等属性。</li>
 </ul>
 <h2 id="思想"><a href="#思想" class="headerlink" title="思想"></a>思想</h2><ul>
-<li>接口可以继承自什么?<br>接口可以继承自接口，但不能继承自类。这意味着一个接口可以通过使用关键字 extends 来扩展（继承）另一个接口。通过接口继承，子接口可以获得父接口中声明的方法签名，但不包括方法的实现。</li>
+<li><p>接口可以继承自什么?<br>接口可以继承自接口，但不能继承自类。这意味着一个接口可以通过使用关键字 extends 来扩展（继承）另一个接口。通过接口继承，子接口可以获得父接口中声明的方法签名，但不包括方法的实现。</p>
+</li>
+<li></li>
 </ul>
+<h2 id="业务思想"><a href="#业务思想" class="headerlink" title="业务思想"></a>业务思想</h2><p>好难啊啊啊啊</p>
+<blockquote>
+<ul>
+<li>1. 首先使用构建增量索引作为广告检索服务</li>
+<li>2. 使用mysql中的Master-Slave协议,通过slave监听binlog日志实现日志,达到数据一致性的目的</li>
+<li>3. Kafka投递解析后的binlog日志，方便后续统计业务等，并维持索引（增量索引）。
+<li>4. 检索广告的索引，实现条件匹配，并返回响应.
+</ul>
+</blockquote>
 ]]></content>
       <categories>
         <category>project</category>
