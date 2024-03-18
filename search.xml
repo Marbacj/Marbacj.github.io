@@ -196,7 +196,44 @@ Ribbon：
 <p>下面是一个简单的示例：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.GetMapping;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.bind.annotation.RestController;</span><br><span class="line"></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HelloController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(&quot;/hello&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">hello</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Hello, World!&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在上面的示例中，HelloController 类被标记为 @RestController，而 hello() 方法被标记为 @GetMapping(“&#x2F;hello”)，该方法会处理对 “&#x2F;hello” 路径的 GET 请求，并将字符串 “Hello, World!” 作为响应体直接返回给客户端。</p>
-]]></content>
+<h1 id="SpringLearning"><a href="#SpringLearning" class="headerlink" title="SpringLearning"></a>SpringLearning</h1><h2 id="1-创建Spring项目"><a href="#1-创建Spring项目" class="headerlink" title="1. 创建Spring项目"></a>1. 创建Spring项目</h2><blockquote>前言: 解释一下什么是断言
+在Java中，断言（Assertion）是一种用于测试程序内部逻辑是否正确的机制。断言允许程序员在代码中插入一些检查点，用于验证在程序执行过程中的一些假设是否成立。
+如果假设不成立，断言会抛出一个 AssertionError 异常，从而提醒程序员代码中存在错误。
+</blockquote>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 断言的语法如下</span></span><br><span class="line"><span class="keyword">assert</span> expression;</span><br><span class="line"><span class="comment">// 或者这样</span></span><br><span class="line"><span class="keyword">assert</span> expression : message;</span><br><span class="line"><span class="comment">// 断言默认情况下是关闭的,想要启动断言可以:</span></span><br><span class="line">java -ea MyProgram</span><br></pre></td></tr></table></figure>
+<p>  Spring的有点可以让我们仅仅关注应用代码的需求无需考虑如何满足框架的需求.</p>
+<h2 id="开发WEB应用"><a href="#开发WEB应用" class="headerlink" title="开发WEB应用"></a>开发WEB应用</h2><h3 id="显示信息"><a href="#显示信息" class="headerlink" title="显示信息"></a>显示信息</h3><ol>
+<li>构建领域类</li>
+<li>创建控制器类  <p><ur>
+  <li>控制器类的主要职责是处理HTTP请求</li>
+  <li>要么将请求传递给试图以便于渲染HTML</li>
+  <li>要么直接将数据写入RESTFUL</li></ur></p></li>
+<li>设计视图<br>  进行使用Thymeleaf starter</li>
+</ol>
+<h3 id="处理表单"><a href="#处理表单" class="headerlink" title="处理表单"></a>处理表单</h3><p>  有@GetMapping和@PostMapping两种方式,区别?</p>
+<ol>
+<li>@GetMapping 用于处理GET请求</li>
+<li>@PostMapping 用于处理POST请求</li>
+<li>表单提交时，会自动将请求参数绑定到处理方法的参数上</li>
+<li>处理方法返回一个视图名称，Thymeleaf会根据视图名称渲染出对应的HTML页面</li>
+</ol>
+<h2 id="使用数据"><a href="#使用数据" class="headerlink" title="使用数据"></a>使用数据</h2><h3 id="使用JDBC读取和写入数据"><a href="#使用JDBC读取和写入数据" class="headerlink" title="使用JDBC读取和写入数据"></a>使用JDBC读取和写入数据</h3><ol>
+<li>创建数据访问对象(DAO)  <blockquote>使用Lombok注解可以在运行时生成访问器方法</blockquote></li>
+</ol>
+<h3 id="使用Spring-Data-JPA持久化数据"><a href="#使用Spring-Data-JPA持久化数据" class="headerlink" title="使用Spring Data JPA持久化数据"></a>使用Spring Data JPA持久化数据</h3><blockquote>
+比较流行的Spring Data项目包括
+<ur>
+<li>SpringDataJpa: 基于关系型数据库进行Jpa持久化</li>
+<li>SpringDataMongoDB:持久化到MongoDB</li>
+<li>SpringDataNeo4j: 持久化到Neo4j图数据库</li>
+<li>SpringDataRedis: 持久化到Redis key-value数据库</li>
+<li>SpringDataCassandra: 持久化到Cassandra数据库</li>
+</ur>
+</blockquote>
+CRUD操作: 创建读取更新删除
+
+<h2 id="使用配置属性"><a href="#使用配置属性" class="headerlink" title="使用配置属性"></a>使用配置属性</h2>]]></content>
       <categories>
         <category>techLearning</category>
       </categories>
