@@ -1,7 +1,523 @@
-extends includes/layout.pug
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>Aloha</title><meta name="author" content="Bach Mar"><meta name="copyright" content="Bach Mar"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta property="og:type" content="website">
+<meta property="og:title" content="Aloha">
+<meta property="og:url" content="https://bachman.top/index.html">
+<meta property="og:site_name" content="Aloha">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://s2.loli.net/2023/11/23/VUQN23CaHtA5EoK.jpg">
+<meta property="article:author" content="Bach Mar">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2023/11/23/VUQN23CaHtA5EoK.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://bachman.top/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/img/pwa/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/img/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/img/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/img/pwa/16.png"/><link rel="mask-icon" href="/img/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: {"appId":"Z7A3XW4R2I","apiKey":"12db1ad54372045549ef465881c17e743","indexName":"my-hexo-blog","hits":{"per_page":6},"languages":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}.","hits_stats":"${hits} results found in ${time} ms"}},
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"You have switched to Traditional Chinese","cht_to_chs":"You have switched to Simplified Chinese","day_to_night":"You have switched to Dark Mode","night_to_day":"You have switched to Light Mode","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Aloha',
+  isPost: false,
+  isHome: true,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2024-10-20 09:31:21'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
 
-block content
-  include ./includes/mixins/post-ui.pug
-  #recent-posts.recent-posts
-    +postUI
-    include includes/pagination.pug
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (true) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2023/11/23/VUQN23CaHtA5EoK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">19</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">5</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> Heartbeat</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fas fa-link"></i><span> Message</span></a></div></div></div></div><div class="page" id="body-wrap"><header class="full_page" id="page-header" style="background-image: url('https://s2.loli.net/2023/11/23/FfJZcm1YBvMkbuS.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Aloha"><span class="site-name">Aloha</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> Heartbeat</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fas fa-link"></i><span> Message</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="site-info"><h1 id="site-title">Aloha</h1><div id="site-subtitle"><span id="subtitle"></span></div><div id="site_social_icons"><a class="social-icon" href="https://github.com/Marbacj" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:dfgd3992@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div id="scroll-down"><i class="fas fa-angle-down scroll-down-effects"></i></div></header><main class="layout" id="content-inner"><div class="recent-posts" id="recent-posts"><div class="recent-post-item"><div class="post_cover left"><a href="/2024/05/29/summaryTemp/" title="summaryTemp"><img class="post-bg" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2024/05/29/unc8Fk2SYKitW7Q.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="summaryTemp"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/05/29/summaryTemp/" title="summaryTemp">summaryTemp</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2024-05-29T13:52:05.000Z" title="Created 2024-05-29 21:52:05">2024-05-29</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/review/">review</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/2024/05/29/summaryTemp/#post-comment"><span class="waline-comment-count" data-path="/2024/05/29/summaryTemp/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> comments</span></span></div><div class="content">体会
+首先十分感谢快手一面,春招的第一家面试,给哥们给足了整个三个月的自信心,到现在回看才发现当时的回答有多么的傻逼,但是,七战快手也是没谁了,大工当代孟获哈哈哈
+对于基础知识还是准备的不扎实,由于项目的起手难度确实稍微高了一些,直接开始微服务,到五月份才开始意识到了分布式知识的重要性,开始进行准备分布式,但是发现准备的稍微还是有点不充足
+infj真的不得不说是一个神奇的人格,e人面前变i,i人面前无敌,整个嘴巴拉巴拉基本上没停过,面试体验最好的还是58,不得不说,体验拉满,给出了很多宝贵的建议
+内耗的时候真内耗,两个月每天睡五个小时,搞得现在每天五点钟醒已经成本能反应了,难受
+多准备复盘,现在不知不觉复盘已经写了30000字了,亏贼,吓人
+关注一手,想起来随时更新……ಥ_ಥ
+
+投递情况呜呜呜,掉小珍珠了,投了六百家,北上大概投了五百家,结果兜兜转转还是回西安了,宿命论,出不了西北了实习中大厂投递 
+面试经验复盘总的来说,还是十分感谢快手让我在整个最难熬的四五月份活了过来,每天投快手,挂快手,咱们秋招见9000字的面试复盘真的不准备打赏一下吗,QAQ(┬┬﹏┬┬)实习中大厂面试复盘&a ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/05/29/internshipReview/" title="internshipReview"><img class="post-bg" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2024/05/29/tjL9Ac8a6VZPe7N.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="internshipReview"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/05/29/internshipReview/" title="internshipReview">internshipReview</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2024-05-29T13:45:14.000Z" title="Created 2024-05-29 21:45:14">2024-05-29</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/review/">review</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/2024/05/29/internshipReview/#post-comment"><span class="waline-comment-count" data-path="/2024/05/29/internshipReview/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> comments</span></span></div><div class="content">快手(海外电商)快手一面(4.8)
+你是如何进行考虑你的项目的?你为什么要想着写这样的两个项目,你学校学过java吗,如何进行学习的
+阿巴阿巴……
+
+来考察一下你的java的基础知识吧,如果我们对于一个Map的结构进行插入会发现十分的慢?这是为什么?
+map的实现是由数组＋链表完成,因此会进行O(n)的插入操作,分开将jdk1.8之前和之后 
+
+如果你进行优化你会如何进行优化
+开始头脑风暴…..首先我想的是将传统的拉链法进行优化,我们可以优化成地址探测法加拉链法……(看得出不太满意,现在复盘发现有点离谱)
+
+这样会导致什么问题?
+如果我们进行插入的时候我们会发现要不断的进行数组的扩容
+
+除了对于数组进行操作,我们还可以进行什么操作(面试官tip: 从链表的结构,我们不用转化成红黑树)
+继续头脑风暴…..用redis中的跳表,给索引构建索引
+
+还行,你讲一下跳表和红黑树,为什么redis要使用跳表而不使用红黑树,红黑树的开销问题
+吟唱失败,(从redis的使用场景进行考虑),redis主要是用作内存,因此从插入的角度来进行考虑,如果使用插入的范围比较范围比较小的话我觉得跳表的开销可能小于 ...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2024/05/29/internship/" title="internship"><img class="post-bg" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2024/05/29/AZcJhgSWzO4jVkp.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="internship"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/05/29/internship/" title="internship">internship</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2024-05-29T13:40:19.000Z" title="Created 2024-05-29 21:40:19">2024-05-29</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/review/">review</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/2024/05/29/internship/#post-comment"><span class="waline-comment-count" data-path="/2024/05/29/internship/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> comments</span></span></div><div class="content">
+
+
+公司名
+投递岗位
+投递时间
+测评
+笔试
+一面
+二面
+情况
+状态
+Base
+
+
+
+快手
+后端
+3&#x2F;27
+√
+
+4&#x2F;8(√)
+4&#x2F;10(×)
+后端挂
+已结束
+北京
+
+
+百度
+后端
+3&#x2F;27
+
+
+
+
+简历挂
+泡池子
+北京
+
+
+58同城
+后端
+3&#x2F;28
+
+
+
+
+
+泡池子
+北京
+
+
+阿里淘天
+后端(测开)
+3&#x2F;31
+√
+√
+
+
+后端挂 测开挂
+已结束
+杭州
+
+
+美团
+后端(测开)
+3&#x2F;31
+√
+√
+4&#x2F;11(√) 5&#x2F;07(×)
+4&#x2F;12(×)
+后端挂 测开挂 复活挂
+已结束
+北京
+
+
+腾讯
+后端
+3&#x2F;31
+√
+
+4&#x2F;23(×)
+
+
+已结束
+深圳
+
+
+携程
+后端
+3&#x2F;31
+√
+
+
+
+笔试挂
+进池子
+北京
+
+
+字节
+后端(测开)
+3&#x2F;31
+
+
+
+
+
+泡池子
+北京
+
+
+北森
+后端
+3&#x2F;31
+×
+
+
+
+
+测评未做
+北京
+
+
+京东
+后端
+3&#x2F;31
+√
+√
+
+
+
+泡池子
+北京
+
+
+华为
+后端
+3&#x2F;31
+√
+√
+
+
+
+已结束
+西安
+
+ ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/04/19/hot30/" title="hot30"><img class="post-bg" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2024/05/29/OiadWx1bwoFV5p6.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="hot30"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/04/19/hot30/" title="hot30">hot30</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2024-04-19T05:21:05.000Z" title="Created 2024-04-19 13:21:05">2024-04-19</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/leetcode/">leetcode</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/2024/04/19/hot30/#post-comment"><span class="waline-comment-count" data-path="/2024/04/19/hot30/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> comments</span></span></div><div class="content">前k个高频元素1234567891011121314151617181920212223242526import java.util.HashMap;import java.util.Map;import java.util.PriorityQueue;class Solution &#123;    public int[] topKFrequent(int[] nums, int k) &#123;        int[] ans = new int[k];        HashMap&lt;Integer,Integer&gt; map = new HashMap&lt;&gt;();        for(int num : nums)&#123;            map.put(num,map.getOrDefault(num,0) + 1);        &#125;        PriorityQueue&lt;Map.Entry&lt;Integer,Integer&gt;&gt; minHeap = new PriorityQueue&lt;&gt;(  ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/03/20/sqlStudy/" title="sqlStudy">sqlStudy</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2024-03-20T07:16:54.000Z" title="Created 2024-03-20 15:16:54">2024-03-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/techLearning/">techLearning</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/2024/03/20/sqlStudy/#post-comment"><span class="waline-comment-count" data-path="/2024/03/20/sqlStudy/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> comments</span></span></div><div class="content">MySQL什么是Master-Slave协议?MySQL的复制（replication）功能是支持主从复制的，主从复制是指将主数据库的DDL和DML操作通过二进制日志（binary log）传到从数据库上，然后在从数据库上对这些日志重新执行（也叫重做），从而使得从数据库的数据与主数据库的数据保持一致。
+
+下面是 MySQL Master-Slave 复制的基本工作流程：
+
+主服务器记录数据更改：当主服务器上的数据库发生数据更改（如插入、更新、删除操作）时，MySQL 会将这些更改记录到二进制日志（binlog）中。
+从服务器连接主服务器：从服务器通过与主服务器建立连接，并发送一个请求，告知主服务器它要开始复制数据了。
+主服务器发送数据：一旦从服务器与主服务器建立了连接并发送了复制请求，主服务器会将自己的二进制日志文件传送给从服务器。
+从服务器应用数据更改：从服务器接收到主服务器的二进制日志后，会将其中的数据更改逐条应用到自己的数据库中，从而使得自己的数据与主服务器保持同步。
+MySQL 的 Master-Slave 复制协议具有以下特点和优势：
+高可用性和容错性：通过将数据复制到多个从 ...</div></div></div><div class="recent-post-item"><div class="recent-post-info no-cover"><a class="article-title" href="/2024/03/20/Array/" title="Array">Array</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2024-03-20T07:16:07.000Z" title="Created 2024-03-20 15:16:07">2024-03-20</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/leetcode/">leetcode</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/2024/03/20/Array/#post-comment"><span class="waline-comment-count" data-path="/2024/03/20/Array/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> comments</span></span></div><div class="content">数组二分查找123456789101112131415161718class Solution &#123;    public int search(int[] nums, int target) &#123;        int start = 0;        int end = nums.length-1;        int mid = 0;        while(start&lt;=end)&#123;            mid = (start+end)/2;            if(nums[mid]==target)&#123;                return mid;            &#125;else if(nums[mid]&gt;target)&#123;                end = mid - 1;            &#125;else if(nums[mid]&lt;target)&#123;                start = mid + 1;            &#125;     ...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2024/03/09/FeignAndHystrix/" title="FeignAndHystrix"><img class="post-bg" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2024/03/09/ohOnKfxgUzCs9Pv.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="FeignAndHystrix"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/03/09/FeignAndHystrix/" title="FeignAndHystrix">FeignAndHystrix</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2024-03-09T06:47:11.000Z" title="Created 2024-03-09 14:47:11">2024-03-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/techLearning/">techLearning</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/2024/03/09/FeignAndHystrix/#post-comment"><span class="waline-comment-count" data-path="/2024/03/09/FeignAndHystrix/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> comments</span></span></div><div class="content">Feign:
+
+Feign 是一个声明式的 HTTP 客户端，它使得编写 HTTP 客户端变得更加简单和优雅。通过 Feign，开发者可以使用注解的方式来定义 HTTP 请求的参数、路径、方法等信息，而无需手动编写 HTTP 请求的代码。
+Feign 可以与 Spring Cloud 中的服务发现组件（如 Eureka）集成，使得微服务之间的调用更加方便和透明。使用feign可以实现微服务之间的调用,
+Feign 是一个很好的微服务间通信的工具，但在复杂的网络环境下，如果发生故障，可能会导致调用失败。这时候就需要一个能够提供容错机制的组件来保障系统的可用性。
+
+
+
+
+Hystrix:
+
+Hystrix 是 Netflix 提供的一个用于处理分布式系统的延迟和故障的库。它实现了断路器模式，可以在服务之间进行通信时提供容错和隔离机制。
+Hystrix 可以通过定义 fallback 方法来处理调用失败时的情况，使得系统在发生故障时能够进行优雅降级，而不至于影响整个系统的稳定性。
+Hystrix 可以与 Feign 集成，通过 FeignClient 的 fallback 属性来指定 Hys ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/03/09/SpringMVC/" title="SpringMVC"><img class="post-bg" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2024/03/09/rSecnVdoUGliyRB.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringMVC"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/03/09/SpringMVC/" title="SpringMVC">SpringMVC</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2024-03-09T06:45:55.000Z" title="Created 2024-03-09 14:45:55">2024-03-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/techLearning/">techLearning</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/2024/03/09/SpringMVC/#post-comment"><span class="waline-comment-count" data-path="/2024/03/09/SpringMVC/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> comments</span></span></div><div class="content">SpringMVCRESTfulRESTful 风格是一种设计风格，用于构建网络服务（Web Services），特别是在使用 HTTP 协议作为通信协议时。它遵循一组约定和原则，使得网络服务具有可伸缩性、可维护性、可扩展性以及性能良好的特性。
+以下是 RESTful 风格的一些主要特点和原则：
+
+基于资源（Resource-Based）：RESTful 风格中的核心概念是资源（Resource），每个资源都有一个唯一的标识符（URI）来表示。客户端通过对资源的标识符进行操作来与资源进行交互，而不是直接对操作进行命名。
+
+统一接口（Uniform Interface）：RESTful 风格使用统一的接口对资源进行操作。这包括使用 HTTP 动词（GET、POST、PUT、DELETE 等）对资源进行 CRUD 操作，以及使用标准的 HTTP 状态码来表示操作结果。
+
+无状态（Stateless）：RESTful 风格的服务应该是无状态的，即服务端不会保存客户端的状态信息。每个请求应该包含足够的信息来完成该请求，服务端不会保存任何客户端的状态。
+
+资源关系（Resource Relati ...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2024/03/09/JpaStudy/" title="JpaStudy"><img class="post-bg" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2024/03/09/Lv4CP5Sn9ptYIsN.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="JpaStudy"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/03/09/JpaStudy/" title="JpaStudy">JpaStudy</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2024-03-09T02:56:02.000Z" title="Created 2024-03-09 10:56:02">2024-03-09</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/techLearning/">techLearning</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/2024/03/09/JpaStudy/#post-comment"><span class="waline-comment-count" data-path="/2024/03/09/JpaStudy/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> comments</span></span></div><div class="content">当你在使用 Spring Data JPA 时，通常会定义一个接口并继承 JpaRepository 接口。这个过程并不是直接的Java接口继承，而是利用了 Spring Data JPA 提供的接口继承机制来简化数据访问层的开发。
+JpaRepository 接口是 Spring Data JPA 提供的一个标准接口，它提供了一组用于对数据库进行常见操作（如保存、更新、删除、查询等）的方法。这些方法在定义时不需要编写具体的实现，Spring Data JPA 会根据方法的命名规则自动为其生成实现。
+当你定义一个接口并继承 JpaRepository 时，Spring Data JPA 会动态地为这个接口生成对应的数据访问方法。这些方法可以直接在你的业务逻辑中使用，而无需手动编写数据访问层的实现代码。
+例如，假设你有一个名为 User 的实体类，你可以定义一个继承自 JpaRepository&lt;User, Long&gt; 的接口：
+123456import org.springframework.data.jpa.repository.JpaRepository;public  ...</div></div></div><div class="recent-post-item"><div class="post_cover right"><a href="/2024/03/08/ProjectLearning2/" title="ProjectLearning2"><img class="post-bg" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2024/03/09/pK18tDmZBs4xA3d.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="ProjectLearning2"></a></div><div class="recent-post-info"><a class="article-title" href="/2024/03/08/ProjectLearning2/" title="ProjectLearning2">ProjectLearning2</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">Created</span><time datetime="2024-03-08T14:34:35.000Z" title="Created 2024-03-08 22:34:35">2024-03-08</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/project/">project</a></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-comments"></i><a href="/2024/03/08/ProjectLearning2/#post-comment"><span class="waline-comment-count" data-path="/2024/03/08/ProjectLearning2/"><i class="fa-solid fa-spinner fa-spin"></i></span></a><span class="article-meta-label"> comments</span></span></div><div class="content">广告投放系统
+
+类CommonResponseAdvice将字段进行包装进行填充,规范化API返回格式：通过统一响应，可以定义API的返回格式，包括状态码、消息、数据等内容，使得不同的接口返回风格一致，提高了接口的可预测性和可读性。
+JpaRepository的继承过程关于JpaRepository的继承过程
+Feign和Hystrix关于Feign和Hystrix的整合，可以参考以下文章：如何理解服务调用,阶段器和负载均衡
+RESTful有关RESTful的介绍，可以参考以下文章：浅谈restful 
+
+
+
+
+
+注解
+@Transactional,声明一个方法需要进行事务管理，并指定事务的隔离级别、传播行为和超时时间等属性。
+
+思想
+接口可以继承自什么?接口可以继承自接口，但不能继承自类。这意味着一个接口可以通过使用关键字 extends 来扩展（继承）另一个接口。通过接口继承，子接口可以获得父接口中声明的方法签名，但不包括方法的实现。
+
+binlogbinlog原理
+主库将数据库中的数据的变化写入到binlog日志文件中2 从库通过连接主库
+从库会创建一个i&#x2F;o线程，用于 ...</div></div></div><nav id="pagination"><div class="pagination"><span class="page-number current">1</span><a class="page-number" href="/page/2/#content-inner">2</a><a class="page-number" href="/page/3/#content-inner">3</a><a class="extend next" rel="next" href="/page/2/#content-inner"><i class="fas fa-chevron-right fa-fw"></i></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2023/11/23/VUQN23CaHtA5EoK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Bach Mar</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">19</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">5</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Marbacj"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/Marbacj" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:dfgd3992@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">halooooooo!</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/05/29/summaryTemp/" title="summaryTemp"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2024/05/29/unc8Fk2SYKitW7Q.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="summaryTemp"/></a><div class="content"><a class="title" href="/2024/05/29/summaryTemp/" title="summaryTemp">summaryTemp</a><time datetime="2024-05-29T13:52:05.000Z" title="Created 2024-05-29 21:52:05">2024-05-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/05/29/internshipReview/" title="internshipReview"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2024/05/29/tjL9Ac8a6VZPe7N.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="internshipReview"/></a><div class="content"><a class="title" href="/2024/05/29/internshipReview/" title="internshipReview">internshipReview</a><time datetime="2024-05-29T13:45:14.000Z" title="Created 2024-05-29 21:45:14">2024-05-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/05/29/internship/" title="internship"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2024/05/29/AZcJhgSWzO4jVkp.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="internship"/></a><div class="content"><a class="title" href="/2024/05/29/internship/" title="internship">internship</a><time datetime="2024-05-29T13:40:19.000Z" title="Created 2024-05-29 21:40:19">2024-05-29</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/04/19/hot30/" title="hot30"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2024/05/29/OiadWx1bwoFV5p6.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="hot30"/></a><div class="content"><a class="title" href="/2024/04/19/hot30/" title="hot30">hot30</a><time datetime="2024-04-19T05:21:05.000Z" title="Created 2024-04-19 13:21:05">2024-04-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/03/20/sqlStudy/" title="sqlStudy">sqlStudy</a><time datetime="2024-03-20T07:16:54.000Z" title="Created 2024-03-20 15:16:54">2024-03-20</time></div></div></div></div><div class="card-widget card-categories"><div class="item-headline">
+            <i class="fas fa-folder-open"></i>
+            <span>Categories</span>
+            
+            </div>
+            <ul class="card-category-list" id="aside-cat-list">
+            <li class="card-category-list-item "><a class="card-category-list-link" href="/categories/java/"><span class="card-category-list-name">java</span><span class="card-category-list-count">1</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/leetcode/"><span class="card-category-list-name">leetcode</span><span class="card-category-list-count">15</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/project/"><span class="card-category-list-name">project</span><span class="card-category-list-count">2</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/review/"><span class="card-category-list-name">review</span><span class="card-category-list-count">3</span></a></li><li class="card-category-list-item "><a class="card-category-list-link" href="/categories/techLearning/"><span class="card-category-list-name">techLearning</span><span class="card-category-list-count">4</span></a></li>
+            </ul></div><div class="card-widget card-tags"><div class="item-headline"><i class="fas fa-tags"></i><span>Tags</span></div><div class="card-tag-cloud"><a href="/tags/binarytree/" style="font-size: 1.45em; color: rgb(127, 67, 94)">binarytree</a><a href="/tags/array/" style="font-size: 1.38em; color: rgb(17, 177, 170)">array</a><a href="/tags/Feign/" style="font-size: 1.15em; color: rgb(27, 0, 46)">Feign</a><a href="/tags/hystrix/" style="font-size: 1.15em; color: rgb(191, 87, 61)">hystrix</a><a href="/tags/Ribbon/" style="font-size: 1.15em; color: rgb(178, 75, 164)">Ribbon</a><a href="/tags/JPA/" style="font-size: 1.15em; color: rgb(50, 51, 171)">JPA</a><a href="/tags/linklist/" style="font-size: 1.3em; color: rgb(92, 174, 150)">linklist</a><a href="/tags/coupon/" style="font-size: 1.15em; color: rgb(188, 136, 123)">coupon</a><a href="/tags/advertisement/" style="font-size: 1.15em; color: rgb(22, 173, 94)">advertisement</a><a href="/tags/Spring/" style="font-size: 1.15em; color: rgb(134, 129, 176)">Spring</a><a href="/tags/JavaLearning/" style="font-size: 1.15em; color: rgb(1, 122, 24)">JavaLearning</a><a href="/tags/HashMap/" style="font-size: 1.22em; color: rgb(52, 99, 130)">HashMap</a><a href="/tags/stack/" style="font-size: 1.15em; color: rgb(37, 146, 134)">stack</a><a href="/tags/double-pointer/" style="font-size: 1.15em; color: rgb(44, 85, 40)">double pointer</a><a href="/tags/sliding/" style="font-size: 1.15em; color: rgb(54, 158, 124)">sliding</a><a href="/tags/window/" style="font-size: 1.15em; color: rgb(139, 118, 13)">window</a><a href="/tags/matrix/" style="font-size: 1.22em; color: rgb(107, 22, 102)">matrix</a><a href="/tags/leetcode/" style="font-size: 1.15em; color: rgb(86, 109, 181)">leetcode</a><a href="/tags/internship/" style="font-size: 1.3em; color: rgb(83, 3, 128)">internship</a></div></div><div class="card-widget card-archives"><div class="item-headline"><i class="fas fa-archive"></i><span>Archives</span></div><ul class="card-archive-list"><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/05/"><span class="card-archive-list-date">May 2024</span><span class="card-archive-list-count">3</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/04/"><span class="card-archive-list-date">April 2024</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/03/"><span class="card-archive-list-date">March 2024</span><span class="card-archive-list-count">8</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/02/"><span class="card-archive-list-date">February 2024</span><span class="card-archive-list-count">1</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2024/01/"><span class="card-archive-list-date">January 2024</span><span class="card-archive-list-count">2</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/12/"><span class="card-archive-list-date">December 2023</span><span class="card-archive-list-count">8</span></a></li><li class="card-archive-list-item"><a class="card-archive-list-link" href="/archives/2023/11/"><span class="card-archive-list-date">November 2023</span><span class="card-archive-list-count">4</span></a></li></ul></div><div class="card-widget card-webinfo"><div class="item-headline"><i class="fas fa-chart-line"></i><span>Info</span></div><div class="webinfo"><div class="webinfo-item"><div class="item-name">Article :</div><div class="item-count">27</div></div><div class="webinfo-item"><div class="item-name">UV :</div><div class="item-count" id="busuanzi_value_site_uv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">PV :</div><div class="item-count" id="busuanzi_value_site_pv"><i class="fa-solid fa-spinner fa-spin"></i></div></div><div class="webinfo-item"><div class="item-name">Last Update :</div><div class="item-count" id="last-push-date" data-lastPushDate="2024-10-20T01:31:21.224Z"><i class="fa-solid fa-spinner fa-spin"></i></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://s2.loli.net/2023/11/23/FfJZcm1YBvMkbuS.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2024 By Bach Mar</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  async function loadWaline () {
+    try {
+      const eleGroup = document.querySelectorAll('#recent-posts .waline-comment-count')
+      const keyArray = Array.from(eleGroup).map(i => i.getAttribute('data-path'))
+
+      const res = await fetch(`http://waline-for-comment-git-main-marbacjs-projects.vercel.app/api/comment?type=count&url=${keyArray}`, { method: 'GET' })
+      const result = await res.json()
+      
+      result.data.forEach((count, index) => {
+        eleGroup[index].textContent = count
+      })
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  window.pjax ? loadWaline() : window.addEventListener('load', loadWaline)
+})()</script><script>window.typedJSFn = {
+  init: (str) => {
+    window.typed = new Typed('#subtitle', Object.assign({
+      strings: str,
+      startDelay: 300,
+      typeSpeed: 150,
+      loop: true,
+      backSpeed: 50,
+    }, ))
+  },
+  run: (subtitleType) => {
+    if (true) {
+      if (typeof Typed === 'function') {
+        subtitleType()
+      } else {
+        getScript('https://cdn.jsdelivr.net/npm/typed.js/dist/typed.umd.min.js').then(subtitleType)
+      }
+    } else {
+      subtitleType()
+    }
+  }
+}
+</script><script>function subtitleType () {
+  if (true) {
+    typedJSFn.init(["今日事&#44;今日畢","Never put off till tomorrow what you can do today","时不我待"])
+  } else {
+    document.getElementById("subtitle").textContent = "今日事&#44;今日畢"
+  }
+}
+typedJSFn.run(subtitleType)</script></div><div class="aplayer no-destroy" data-id="869483740" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-autoplay="true" data-preload="true" data-mutex="true"> </div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener
+  btf.removeGlobalFnEvent('pjax')
+  btf.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="algolia-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="search-wrap"><div id="algolia-search-input"></div><hr/><div id="algolia-search-results"><div id="algolia-hits"></div><div id="algolia-pagination"></div><div id="algolia-info"><div class="algolia-stats"></div><div class="algolia-poweredBy"></div></div></div></div></div><div id="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/algoliasearch/dist/algoliasearch-lite.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instantsearch.js/dist/instantsearch.production.min.js"></script><script src="/js/search/algolia.js"></script></div></div></body></html>
