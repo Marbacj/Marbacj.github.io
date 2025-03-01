@@ -1,0 +1,342 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>简析分期支付实现--优化篇（2） | Aloha</title><meta name="author" content="Bach Mar"><meta name="copyright" content="Bach Mar"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="default 回顾上一篇聊到了如何去保证转账功能的唯一性，和浅谈了一下加入了cas提升了转账行为的效率，这期我们来谈一谈在延时队列的任务加入后我们做了什么。 我们预估的系统的使用人数如果是一百万的话，如果每个人在使用这个平台完成了五笔合同，（都是按月转账），那么系统每个月需要处理的转账到达五百万笔，那么平均每秒需要完成的交易金额在19290笔左右，这时候我们单纯的开辟一个线程池去直接消费，线程池">
+<meta property="og:type" content="article">
+<meta property="og:title" content="简析分期支付实现--优化篇（2）">
+<meta property="og:url" content="https://bachman.top/2025/03/01/installment-transfer3/index.html">
+<meta property="og:site_name" content="Aloha">
+<meta property="og:description" content="default 回顾上一篇聊到了如何去保证转账功能的唯一性，和浅谈了一下加入了cas提升了转账行为的效率，这期我们来谈一谈在延时队列的任务加入后我们做了什么。 我们预估的系统的使用人数如果是一百万的话，如果每个人在使用这个平台完成了五笔合同，（都是按月转账），那么系统每个月需要处理的转账到达五百万笔，那么平均每秒需要完成的交易金额在19290笔左右，这时候我们单纯的开辟一个线程池去直接消费，线程池">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://s2.loli.net/2023/11/23/VUQN23CaHtA5EoK.jpg">
+<meta property="article:published_time" content="2025-03-01T09:39:12.000Z">
+<meta property="article:modified_time" content="2025-03-01T09:39:12.084Z">
+<meta property="article:author" content="Bach Mar">
+<meta property="article:tag" content="installment-transfer">
+<meta property="article:tag" content="kafka">
+<meta property="article:tag" content="thread pool">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2023/11/23/VUQN23CaHtA5EoK.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://bachman.top/2025/03/01/installment-transfer3/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/img/pwa/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/img/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/img/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/img/pwa/16.png"/><link rel="mask-icon" href="/img/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: {"appId":"Z7A3XW4R2I","apiKey":"12db1ad54372045549ef465881c17e743","indexName":"my-hexo-blog","hits":{"per_page":6},"languages":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}.","hits_stats":"${hits} results found in ${time} ms"}},
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"You have switched to Traditional Chinese","cht_to_chs":"You have switched to Simplified Chinese","day_to_night":"You have switched to Dark Mode","night_to_day":"You have switched to Light Mode","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '简析分期支付实现--优化篇（2）',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-03-01 17:39:12'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (true) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2023/11/23/VUQN23CaHtA5EoK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">25</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">12</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> Heartbeat</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fas fa-link"></i><span> Message</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://s2.loli.net/2023/11/23/uSYBUO4gLjFzDmy.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Aloha"><span class="site-name">Aloha</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> Heartbeat</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fas fa-link"></i><span> Message</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">简析分期支付实现--优化篇（2）</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-03-01T09:39:12.000Z" title="Created 2025-03-01 17:39:12">2025-03-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-03-01T09:39:12.084Z" title="Updated 2025-03-01 17:39:12">2025-03-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/distributed-system/">distributed-system</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="简析分期支付实现--优化篇（2）"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>default</p>
+<h1 id="回顾"><a href="#回顾" class="headerlink" title="回顾"></a>回顾</h1><p>上一篇聊到了如何去保证转账功能的唯一性，和浅谈了一下加入了cas提升了转账行为的效率，这期我们来谈一谈在延时队列的任务加入后我们做了什么。</p>
+<p>我们预估的系统的使用人数如果是一百万的话，如果每个人在使用这个平台完成了五笔合同，（都是按月转账），那么系统每个月需要处理的转账到达五百万笔，那么平均每秒需要完成的交易金额在19290笔左右，这时候我们单纯的开辟一个线程池去直接消费，线程池压力会非常大，同时使用线程池也不能够支持削峰，面对突然激增的活动肯定会出现故障，因此我在这个过程中牺牲了一定的转账的准确性。</p>
+<h1 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h1><p>在我的实现中一共设计了三个消费主题</p>
+<ol>
+<li><code>@KafkaListener(topics = &quot;contract-scheduled&quot;, groupId = &quot;contract-group&quot;)</code>延时队列发送过来的消息进行消费</li>
+<li><code>@KafkaListener(topics = &quot;contract-scheduled-retries&quot;, groupId = &quot;contract-group-retries&quot;)</code>如果消费失败就进行重试</li>
+<li><code>@KafkaListener(topics = &quot;contract-scheduled-dlq&quot;, groupId = &quot;contract-group-dlq&quot;)</code>如果重试次数大于3次，就进入死信队列等待管理员操作或者</li>
+</ol>
+<blockquote>
+<p>另外再提一嘴kafka的消费模式，kafka使用的是被动拉的模式，kafka会在被注册后一直执行poll（）操作进行轮询，但是</p>
+</blockquote>
+<h2 id="主消费队列"><a href="#主消费队列" class="headerlink" title="主消费队列"></a>主消费队列</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">processTransferAsync(contractId, merchantId, unitAmount, transaction);</span><br></pre></td></tr></table></figure>
+
+<h2 id="重试消息队列"><a href="#重试消息队列" class="headerlink" title="重试消息队列"></a>重试消息队列</h2><p>尝试消息队列需要注意幂等性设计，因为我们的xxl-job也在做任务补偿，很可能造成重复转账</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">     <span class="type">RLock</span> <span class="variable">merchantLock</span> <span class="operator">=</span> redissonClient.getLock(<span class="string">&quot;merchantLock&quot;</span> + merchantId);</span><br><span class="line">     <span class="keyword">try</span>&#123;</span><br><span class="line">         merchantLock.lock();</span><br><span class="line">         <span class="keyword">if</span> (transaction.getRetryCount() &lt; MAX_RETRY_COUNT) &#123;</span><br><span class="line">             processTransferAsync(contractId, merchantId, unitAmount, transaction);</span><br><span class="line">         &#125;</span><br><span class="line">     &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">         merchantLock.unlock();</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="comment">// 尝试再次进行转账</span></span><br><span class="line">     merchantServiceFeign.receiveTransferAccount(<span class="keyword">new</span> <span class="title class_">TransferRequest</span>(merchantId, unitAmount));</span><br><span class="line"></span><br><span class="line">     transaction.setStatus(Transaction.TransactionStatus.SUCCESS);</span><br><span class="line">     transactionDao.insertOrUpdateTransactionSuccess(transaction);</span><br><span class="line">     logger.info(<span class="string">&quot;Retry SUCCESS for contract:&#123;&#125; merchant:&#123;&#125; amount:&#123;&#125;&quot;</span>, contractId, merchantId, unitAmount);</span><br><span class="line"> &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">     <span class="comment">//退避策略增强</span></span><br><span class="line">     logger.error(<span class="string">&quot;Retry failed for contract:&#123;&#125; merchant:&#123;&#125;, scheduling another retry&quot;</span>, contractId, merchantId, e);</span><br><span class="line">     <span class="comment">// 将消息再次推送到重试队列，增加延迟（可以增加延迟时间）</span></span><br><span class="line">     <span class="comment">// 在重试发送时添加延时</span></span><br><span class="line">     kafkaTemplate.send(</span><br><span class="line">             <span class="string">&quot;contract-scheduled-retries&quot;</span>,</span><br><span class="line">             <span class="literal">null</span>,</span><br><span class="line">             System.currentTimeMillis(),</span><br><span class="line">             <span class="literal">null</span>,</span><br><span class="line">             transaction</span><br><span class="line">     ).addCallback(</span><br><span class="line">             result -&gt; &#123;&#125;,</span><br><span class="line">             ex -&gt; logger.error(<span class="string">&quot;Retry send failed&quot;</span>, ex)</span><br><span class="line">     );</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>同时也需要进行注意使用退避策略，防止调用时间过长</p>
+<h2 id="死信队列"><a href="#死信队列" class="headerlink" title="死信队列"></a>死信队列</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 死信队列的设计是有缺陷的</span></span><br><span class="line"><span class="comment"> * 是否应该加入自动重试机制，还是直接发送给管理员进行处理</span></span><br><span class="line"><span class="comment"> * 日志如何保存，如何通知管理员</span></span><br><span class="line"><span class="comment"> * 是否应该加入普罗米修斯+ grafana</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="comment">// 死信队列消费</span></span><br><span class="line"><span class="meta">@KafkaListener(topics = &quot;contract-scheduled-dlq&quot;, groupId = &quot;contract-group-dlq&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">handleDeadLetterTransaction</span><span class="params">(ConsumerRecord&lt;String, Transaction&gt; record)</span> &#123;</span><br><span class="line">    <span class="type">Transaction</span> <span class="variable">transaction</span> <span class="operator">=</span> record.value();</span><br><span class="line">    logger.error(<span class="string">&quot;Dead letter transaction for contract:&#123;&#125; merchant:&#123;&#125;&quot;</span>, transaction.getContractId(), transaction.getMerchantId());</span><br><span class="line">    <span class="comment">// 此处可以将失败的交易记录到数据库或发送通知给管理员等操作</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Q-A"><a href="#Q-A" class="headerlink" title="Q&amp;A"></a>Q&amp;A</h1><p>另外考虑一下</p>
+<ol>
+<li>如果kafka消费者宕机了怎么办</li>
+<li>在高并发场景下，kafka性能如何保证</li>
+<li>以及一些其他的问题的理解我放在了我的kafka笔记篇了</li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://bachman.top">Bach Mar</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://bachman.top/2025/03/01/installment-transfer3/">https://bachman.top/2025/03/01/installment-transfer3/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/installment-transfer/">installment-transfer</a><a class="post-meta__tags" href="/tags/kafka/">kafka</a><a class="post-meta__tags" href="/tags/thread-pool/">thread pool</a></div><div class="post_share"><div class="social-share" data-image="https://s2.loli.net/2023/11/23/VUQN23CaHtA5EoK.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>Sponsor</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://s2.loli.net/2023/11/24/ljCo7BFt3qYdKNJ.png" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2023/11/24/ljCo7BFt3qYdKNJ.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://s2.loli.net/2023/11/24/WHzu7xCESfPo5Ac.png" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2023/11/24/WHzu7xCESfPo5Ac.png" alt="Alipay"/></a><div class="post-qr-code-desc">Alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2025/03/01/installment-transfer2/" title="简析分期支付实现-优化篇"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">Next</div><div class="next_info">简析分期支付实现-优化篇</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2025/03/01/installment-transfer2/" title="简析分期支付实现-优化篇"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-01</div><div class="title">简析分期支付实现-优化篇</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div><div class="comment-switch"><span class="first-comment">Waline</span><span id="switch-btn"></span><span class="second-comment">Facebook Comments</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div><div><div class="fb-comments" data-colorscheme="light" data-numposts="10" data-order-by="social" data-width="100%"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2023/11/23/VUQN23CaHtA5EoK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Bach Mar</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">14</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">25</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">12</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Marbacj"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/Marbacj" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:dfgd3992@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">halooooooo!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9E%E9%A1%BE"><span class="toc-number">1.</span> <span class="toc-text">回顾</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0"><span class="toc-number">2.</span> <span class="toc-text">实现</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BB%E6%B6%88%E8%B4%B9%E9%98%9F%E5%88%97"><span class="toc-number">2.1.</span> <span class="toc-text">主消费队列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%87%8D%E8%AF%95%E6%B6%88%E6%81%AF%E9%98%9F%E5%88%97"><span class="toc-number">2.2.</span> <span class="toc-text">重试消息队列</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%AD%BB%E4%BF%A1%E9%98%9F%E5%88%97"><span class="toc-number">2.3.</span> <span class="toc-text">死信队列</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Q-A"><span class="toc-number">3.</span> <span class="toc-text">Q&amp;A</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/01/installment-transfer3/" title="简析分期支付实现--优化篇（2）">简析分期支付实现--优化篇（2）</a><time datetime="2025-03-01T09:39:12.000Z" title="Created 2025-03-01 17:39:12">2025-03-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/01/installment-transfer2/" title="简析分期支付实现-优化篇">简析分期支付实现-优化篇</a><time datetime="2025-03-01T07:20:36.000Z" title="Created 2025-03-01 15:20:36">2025-03-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/02/28/springCloudGateway/" title="简析SpringCloud网关"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/pic/SpringCloudGateway/%E6%88%AA%E5%B1%8F2025-02-27%2017.10.14.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="简析SpringCloud网关"/></a><div class="content"><a class="title" href="/2025/02/28/springCloudGateway/" title="简析SpringCloud网关">简析SpringCloud网关</a><time datetime="2025-02-28T02:27:26.000Z" title="Created 2025-02-28 10:27:26">2025-02-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/02/27/installment-transfer/" title="浅析分期支付的实现"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/pic/installment-transfer/%E6%88%AA%E5%B1%8F2025-02-28%2011.26.58.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="浅析分期支付的实现"/></a><div class="content"><a class="title" href="/2025/02/27/installment-transfer/" title="浅析分期支付的实现">浅析分期支付的实现</a><time datetime="2025-02-27T08:02:44.000Z" title="Created 2025-02-27 16:02:44">2025-02-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/02/26/JWT/" title="简述JWT系统实现">简述JWT系统实现</a><time datetime="2025-02-26T09:13:53.000Z" title="Created 2025-02-26 17:13:53">2025-02-26</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://s2.loli.net/2023/11/23/uSYBUO4gLjFzDmy.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By Bach Mar</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const initWaline = () => {
+    const waline = Waline.init(Object.assign({
+      el: '#waline-wrap',
+      serverURL: 'http://waline-for-comment-git-main-marbacjs-projects.vercel.app',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      path: window.location.pathname,
+      comment: false,
+    }, null))
+  }
+
+  const loadWaline = async () => {
+    if (typeof Waline === 'object') initWaline()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js')
+      initWaline()
+    }
+  }
+
+  if ('Waline' === 'Waline' || !true) {
+    if (true) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script><script>(()=>{
+  const loadFBComment = () => {
+    document.getElementById('fb-root') ? '' : document.body.insertAdjacentHTML('afterend', '<div id="fb-root"></div>')
+
+    const themeNow = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
+    const $fbComment = document.getElementsByClassName('fb-comments')[0]
+    $fbComment.setAttribute('data-colorscheme',themeNow)
+    $fbComment.setAttribute('data-href', 'https://bachman.top/2025/03/01/installment-transfer3/')
+
+    if (typeof FB === 'object') {
+      FB.XFBML.parse(document.getElementsByClassName('post-meta-commentcount')[0])
+      FB.XFBML.parse(document.getElementById('post-comment'))
+    }
+    else {
+      let ele = document.createElement('script')
+      ele.setAttribute('src','https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v16.0')
+      ele.setAttribute('async', 'true')
+      ele.setAttribute('defer', 'true')
+      ele.setAttribute('crossorigin', 'anonymous')
+      ele.setAttribute('id', 'facebook-jssdk')
+      document.getElementById('fb-root').insertAdjacentElement('afterbegin',ele)
+    }
+  }
+
+  const fbModeChange = theme => {
+    const $fbComment = document.getElementsByClassName('fb-comments')[0]
+    if ($fbComment && typeof FB === 'object') {
+      $fbComment.setAttribute('data-colorscheme',theme)
+      FB.XFBML.parse(document.getElementById('post-comment'))
+    }
+  }
+
+  btf.addGlobalFn('themeChange', fbModeChange, 'facebook_comments')
+
+  if ('Waline' === 'Facebook Comments' || !true) {
+    if (true) btf.loadComment(document.querySelector('#post-comment .fb-comments'), loadFBComment)
+    else loadFBComment()
+  } else {
+    window.loadOtherComment = loadFBComment
+  }
+})()</script></div><div class="aplayer no-destroy" data-id="869483740" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-autoplay="true" data-preload="true" data-mutex="true"> </div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener
+  btf.removeGlobalFnEvent('pjax')
+  btf.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="algolia-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="search-wrap"><div id="algolia-search-input"></div><hr/><div id="algolia-search-results"><div id="algolia-hits"></div><div id="algolia-pagination"></div><div id="algolia-info"><div class="algolia-stats"></div><div class="algolia-poweredBy"></div></div></div></div></div><div id="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/algoliasearch/dist/algoliasearch-lite.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instantsearch.js/dist/instantsearch.production.min.js"></script><script src="/js/search/algolia.js"></script></div></div></body></html>
