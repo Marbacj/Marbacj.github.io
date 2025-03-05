@@ -1,0 +1,507 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>浅入深出kafka--基础篇 | Aloha</title><meta name="author" content="Bach Mar"><meta name="copyright" content="Bach Mar"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="kafkakafka的基本结构 message： key+value  key：讲key值路由到指定的partition中，从而保证key相同的message写入同一partition中  value： 传递真正的值    topic：producer和consumer在写入之前进行约定  topic可以看成一个message的通道，连接多个producer和consumer   partitio">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅入深出kafka--基础篇">
+<meta property="og:url" content="https://bachman.top/2025/03/05/kafkabase/index.html">
+<meta property="og:site_name" content="Aloha">
+<meta property="og:description" content="kafkakafka的基本结构 message： key+value  key：讲key值路由到指定的partition中，从而保证key相同的message写入同一partition中  value： 传递真正的值    topic：producer和consumer在写入之前进行约定  topic可以看成一个message的通道，连接多个producer和consumer   partitio">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://s2.loli.net/2023/11/23/VUQN23CaHtA5EoK.jpg">
+<meta property="article:published_time" content="2025-03-05T01:28:13.000Z">
+<meta property="article:modified_time" content="2025-03-05T01:29:30.287Z">
+<meta property="article:author" content="Bach Mar">
+<meta property="article:tag" content="kafka">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://s2.loli.net/2023/11/23/VUQN23CaHtA5EoK.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://bachman.top/2025/03/05/kafkabase/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="manifest" href="/img/pwa/manifest.json"/><link rel="apple-touch-icon" sizes="180x180" href="/img/pwa/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/img/pwa/32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/img/pwa/16.png"/><link rel="mask-icon" href="/img/pwa/safari-pinned-tab.svg" color="#5bbad5"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: {"appId":"Z7A3XW4R2I","apiKey":"12db1ad54372045549ef465881c17e743","indexName":"my-hexo-blog","hits":{"per_page":6},"languages":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}.","hits_stats":"${hits} results found in ${time} ms"}},
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Error',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: {"chs_to_cht":"You have switched to Traditional Chinese","cht_to_chs":"You have switched to Simplified Chinese","day_to_night":"You have switched to Dark Mode","night_to_day":"You have switched to Light Mode","bgLight":"#49b1f5","bgDark":"#1f1f1f","position":"bottom-left"},
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: true,
+  islazyload: true,
+  isAnchor: true,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '浅入深出kafka--基础篇',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-03-05 09:29:30'
+}</script><script>(win=>{
+      win.saveToLocal = {
+        set: (key, value, ttl) => {
+          if (ttl === 0) return
+          const now = Date.now()
+          const expiry = now + ttl * 86400000
+          const item = {
+            value,
+            expiry
+          }
+          localStorage.setItem(key, JSON.stringify(item))
+        },
+      
+        get: key => {
+          const itemStr = localStorage.getItem(key)
+      
+          if (!itemStr) {
+            return undefined
+          }
+          const item = JSON.parse(itemStr)
+          const now = Date.now()
+      
+          if (now > item.expiry) {
+            localStorage.removeItem(key)
+            return undefined
+          }
+          return item.value
+        }
+      }
+    
+      win.getScript = (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        script.onerror = reject
+        script.onload = script.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          script.onload = script.onreadystatechange = null
+          resolve()
+        }
+
+        Object.keys(attr).forEach(key => {
+          script.setAttribute(key, attr[key])
+        })
+
+        document.head.appendChild(script)
+      })
+    
+      win.getCSS = (url, id = false) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onerror = reject
+        link.onload = link.onreadystatechange = function() {
+          const loadState = this.readyState
+          if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+          link.onload = link.onreadystatechange = null
+          resolve()
+        }
+        document.head.appendChild(link)
+      })
+    
+      win.activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+        if (t === 'dark') activateDarkMode()
+        else if (t === 'light') activateLightMode()
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+      const detectApple = () => {
+        if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+          document.documentElement.classList.add('apple')
+        }
+      }
+      detectApple()
+    })(window)</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><script>(()=>{
+  const $loadingBox = document.getElementById('loading-box')
+  const $body = document.body
+  const preloader = {
+    endLoading: () => {
+      $body.style.overflow = ''
+      $loadingBox.classList.add('loaded')
+    },
+    initLoading: () => {
+      $body.style.overflow = 'hidden'
+      $loadingBox.classList.remove('loaded')
+    }
+  }
+
+  preloader.initLoading()
+  window.addEventListener('load',() => { preloader.endLoading() })
+
+  if (true) {
+    document.addEventListener('pjax:send', () => { preloader.initLoading() })
+    document.addEventListener('pjax:complete', () => { preloader.endLoading() })
+  }
+})()</script><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2023/11/23/VUQN23CaHtA5EoK.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">26</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">14</div></a></div><hr class="custom-hr"/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> Heartbeat</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fas fa-link"></i><span> Message</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://s2.loli.net/2023/11/23/uSYBUO4gLjFzDmy.jpg')"><nav id="nav"><span id="blog-info"><a href="/" title="Aloha"><span class="site-name">Aloha</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> Search</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-heartbeat"></i><span> Heartbeat</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/music/"><i class="fa-fw fas fa-music"></i><span> Music</span></a></li><li><a class="site-page child" href="/Gallery/"><i class="fa-fw fas fa-images"></i><span> Gallery</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/message/"><i class="fa-fw fas fa-link"></i><span> Message</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">浅入深出kafka--基础篇</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2025-03-05T01:28:13.000Z" title="Created 2025-03-05 09:28:13">2025-03-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2025-03-05T01:29:30.287Z" title="Updated 2025-03-05 09:29:30">2025-03-05</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/kafka/">kafka</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="浅入深出kafka--基础篇"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="kafka"><a href="#kafka" class="headerlink" title="kafka"></a>kafka</h1><h2 id="kafka的基本结构"><a href="#kafka的基本结构" class="headerlink" title="kafka的基本结构"></a>kafka的基本结构</h2><ol>
+<li><p><strong>message</strong>： key+value</p>
+<ol>
+<li><p>key：讲key值路由到指定的partition中，从而保证key相同的message写入同一partition中</p>
+</li>
+<li><p>value： 传递真正的值</p>
+</li>
+</ol>
+</li>
+<li><p><strong>topic</strong>：producer和consumer在写入之前进行约定</p>
+<ol>
+<li>topic可以看成一个message的通道，连接多个producer和consumer</li>
+</ol>
+</li>
+<li><p><strong>partition</strong>： 在topic中进行了进一步的拆分，将topic分为了至少一个partition</p>
+<ol>
+<li><p>当message被producer <strong>push</strong>到partition中的时候，会被分配一个offset编号（<strong>通过offset编号就可以保证了一个partion中的消息是有序的</strong>）</p>
+</li>
+<li><p>同时kafka中的一个topic的横向扩展能力是通过partition实现的。</p>
+</li>
+<li><p>同一 topic 的不同 partition 会分配到不同的物理机上，partition 是 topic 横向扩展的最小单位，一个 partition 中存储的这一组有序 message 没法存储到多台机器上。</p>
+</li>
+</ol>
+</li>
+<li><p><strong>broker</strong>： </p>
+<p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://xxxlxy2008.github.io/kafka/1%E3%80%81kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/3%E3%80%81partition2.png"></p>
+<ol>
+<li><p>（<em>kafka提高吞吐量的方法</em>）提高partition和broker进行提高吞吐量</p>
+</li>
+<li><p>主要的职责：1. 接受producer push过来的message 2. 处理consumer请求 3. 处理集群其他的broker的请求</p>
+</li>
+</ol>
+</li>
+<li><p><strong>log</strong>：</p>
+<ol>
+<li><p>partition逻辑上实际上对应着一个log，kafka实际上写入message到partition中的log中（<strong>log对应一个磁盘上的文件夹</strong>），log文件夹下逻辑上又分为多个segment文件</p>
+</li>
+<li><p>当message在写入的时候实际上写入的是最新的segment文件和index文件，当segment进行膨胀过大的时候会进行创建一个新的segment进行写入，未了避免过大实际上在写入segement的时候是顺序写入</p>
+</li>
+<li><p>index文件是segment的一个稀疏索引，提高索引速度。</p>
+</li>
+</ol>
+</li>
+<li><p><strong>replica</strong>：</p>
+<ol>
+<li><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://xxxlxy2008.github.io/kafka/1%E3%80%81kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/5%E3%80%81replica.png"></p>
+</li>
+<li><p>一个partition会有多个replica，有一个是leader，其他的都是follower，所有的读写请求都是有leader处理，其余的定期进行拉入更新自己的log</p>
+</li>
+<li><p><strong>使用replica保证了分布式系统的可用性，保证数据完整性和安全性，也叫备份</strong></p>
+</li>
+<li><p>如果其中的一个broker宕机，那么会进行选举新的leader replica。</p>
+</li>
+<li><p>同一partition中的replica相同</p>
+</li>
+</ol>
+</li>
+<li><p>ISR集合（In-Sync Replic）</p>
+<ol>
+<li><p>表示一个replic集合</p>
+</li>
+<li><p>replica所在的broker必须与zookeeper保持连接</p>
+</li>
+<li><p>replica中最后一条message的offset与leader replica中的最后一条message的offset之间的差值不能超出指定的阈值</p>
+</li>
+<li><p>如果长时间没有进行数据同步，会进行踢出ISR集合</p>
+</li>
+<li><p>同时会进行回追，如果message的offset小于leader replica的差值阈值时会重新加入ISR集合中</p>
+</li>
+</ol>
+</li>
+<li><p>Highwatermark，Log and Offset</p>
+<ol>
+<li><p>consumer只能消费HW标记之前的值</p>
+</li>
+<li><p>HW值由leader replica进行管理</p>
+</li>
+<li><p>LEO是所有的replica都有的一个标记，用于记录当前的replica的最后一个offset值</p>
+</li>
+<li><p>HW的值为所有的replica的最小的LEO值</p>
+</li>
+</ol>
+</li>
+<li><p>Retition Policy &amp; Log compaction</p>
+<ol>
+<li><p>无论message是否被consumer消费，kafka都会长时间保留message信息，这种通过retition（保留策略进行保证）同时可以针对所有的topic进行执行，或者针对特定的topic进行执行</p>
+</li>
+<li><p>默认的有两种：</p>
+<ol>
+<li><p>根据message保留的时长进行清理，如果超过阈值我们就可以进行清理</p>
+</li>
+<li><p>当topic的log大于一个阈值之后，我们就可以开始后台线程删除最旧的message</p>
+</li>
+</ol>
+</li>
+<li><p>log Compaction：我们只关心value，我们会将相同的key的message进行合并，保留最新的value值</p>
+</li>
+</ol>
+</li>
+<li><p>controller：</p>
+<ol>
+<li><p>会选举一个broker作为controller，来管理partition下replica的状态以及坚挺zookeeper的数据的变更</p>
+</li>
+<li><p>所有的broker会进行监听controller的状态，如果宕机会进行重新选举</p>
+</li>
+</ol>
+</li>
+<li><p>consumer：</p>
+<ol>
+<li><p>consumer中维护了一个offset信息，用来记录当前consumer消费到了partition的哪个位置</p>
+</li>
+<li><p>同时减轻了broker维护consumer的压力，如果broker出现故障时，就会导致消息丢失，consumer可以正确的消费</p>
+</li>
+</ol>
+</li>
+<li><p>consumer group</p>
+<ol>
+<li><p>Consumer group是消费message的基本单位</p>
+</li>
+<li><p>如果要实现多播我们可以将一个consumer作为一个consumer group</p>
+</li>
+<li><p>如果想要实现独占消费我们可以将目标topic的consumer放在一个consumer group 中，我们就可以保证每个partition中只有一个consumer消费</p>
+</li>
+<li><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://xxxlxy2008.github.io/kafka/1%E3%80%81kafka%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/8%E3%80%81consumer_group.png"></p>
+</li>
+<li><p>如果consumer的消费能力不够时，再添加一个consumer会进行重新映射</p>
+</li>
+</ol>
+</li>
+</ol>
+<h2 id="消费顺序"><a href="#消费顺序" class="headerlink" title="消费顺序"></a>消费顺序</h2><p>kafka通过<code>partition</code> 和<code>consumer group</code>保证消费顺序</p>
+<p><strong>生产者侧</strong>： 通过key将所有消息映射到同一个确定的分区上（保证相同的消息会被路由到同一个分区）</p>
+<p><strong>消费者侧</strong>： 保证消费者组内只有一个消费者实例进行消费，才能保证分区的顺序消费。（可以通过设置消费者组内的并发度小于分区数来实现）</p>
+<h3 id="多分区下的消费顺序的保证"><a href="#多分区下的消费顺序的保证" class="headerlink" title="多分区下的消费顺序的保证"></a>多分区下的消费顺序的保证</h3><ol>
+<li><p>可以使用分区器保证，将相同的业务标识的消息发送到同一个分区，从而保证单个分区内部保持消息顺序。</p>
+</li>
+<li><p>使用自定义分区器，确保业务标识路由到正确的分区</p>
+</li>
+<li><p>为了提高单个partition中的消费速度，我们可以使用java中的内存队列（blocking Queue）作为缓冲区，结合一步处理，提高消费端的速度。</p>
+</li>
+<li><p><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://coderacademy.oss-cn-zhangjiakou.aliyuncs.com/blogcontent/20240314124302.png" alt="image.png"></p>
+</li>
+</ol>
+<h2 id="kafka消息丢失"><a href="#kafka消息丢失" class="headerlink" title="kafka消息丢失"></a>kafka消息丢失</h2><h3 id="Producer"><a href="#Producer" class="headerlink" title="Producer"></a>Producer</h3><ol>
+<li><p>producer丢失消息发生在客户端</p>
+</li>
+<li><p>为了提升效率，producer会将多个请求进行合并发送，合并的请求先放到buffer中，然后我们按照时间间隔将buffer中的数据发出。</p>
+</li>
+<li><p>正常情况，kafka提供了callback来处理消息发送失败或者超市的情况</p>
+</li>
+<li><p>一旦producer被非法停止，那么buffer中的数据将丢失</p>
+</li>
+<li><p>可以将buffer移到磁盘，在添加一个生产线程，相当于添加一个更加富裕的缓冲</p>
+</li>
+</ol>
+<h3 id="Consumer"><a href="#Consumer" class="headerlink" title="Consumer"></a>Consumer</h3><p>consumer消费方式有两种</p>
+<ol>
+<li><p>自动提交，automatic offset commiting</p>
+</li>
+<li><p>手动提交，manual offset commiting</p>
+</li>
+</ol>
+<p><strong>存在问题</strong>： 自动提交是根据一定的时间间隔，如果接受到的消息commit，commit提交和消费的过程<strong>异步</strong>，导致commit已经提交，此时消息进行丢失</p>
+<p>可以改为手动提交，确保所有消息消费完毕后，才进行commit</p>
+<h3 id="broker"><a href="#broker" class="headerlink" title="broker"></a>broker</h3><p>broker消息丢失是由于kafka为了得到吞吐量和更高的性能，将数据异步批量的存储在磁盘中，kafka采用了按照一定消息量或者按照一定的时间间隔进行刷盘</p>
+<ol>
+<li><p>producer和broker之间采用一种协商机制，如果producer检测到broker消息丢失，就进行retry。这个检测消息丢失的过程就是使用ack机制，类似tcp的三次握手</p>
+<ol>
+<li><p>acks &#x3D; 0，producer不等待broker的响应，效率最高，但是消息可能丢失</p>
+</li>
+<li><p>acks &#x3D; 1，producer和leader broker进行消息确认，不等待follower响应，此时leader成功写入<strong>page cache</strong>，会进行返回ack，如果还没有进行同步follower，那么消息就会丢失</p>
+</li>
+<li><p>acks &#x3D; -1 &#x2F; all，leader会等待ISR返回成功后才返回ack，安全性最高，效率最低</p>
+</li>
+<li><p>数据从leader同步到follower的过程</p>
+<ul>
+<li>数据从pageCache被刷盘到disk。因为只有disk中的数据才能被同步到replica。</li>
+<li><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/techpedia/1728?from_column=20065&from=20065">数据同步</a>到replica，并且replica成功将数据写入PageCache。在producer得到ack后，哪怕是所有机器都停电，数据也至少会存在于leader的磁盘内。</li>
+</ul>
+</li>
+</ol>
+</li>
+</ol>
+<h2 id="消费重复"><a href="#消费重复" class="headerlink" title="消费重复"></a>消费重复</h2><p>这个问题由于consumer的消息丢失我们会采取一种manual offset commit的操作，会导致一种情况，消息被消费，但是offset没有被提交，下次会导致重复消费</p>
+<blockquote>
+<p>解决方案： 做幂等性校验</p>
+</blockquote>
+<ul>
+<li>先写数据库，根据主键查一下，如果这数据存在，就update</li>
+<li>先写<a target="_blank" rel="noopener" href="https://cloud.tencent.com/product/crs?from_column=20065&from=20065">redis</a>,用set结构去重</li>
+<li>在进MQ之前，需要让生产者发送每条数据的时候，里面加一个全局唯一的 id，类似订单 id 之类的东西，当开始消费的时候，先根据这个 id 去比如 Redis 里查一下，如果没有消费过，这个 id 写 Redis。如果消费过了，那不处理了，保证别重复处理相同的消息即可。</li>
+<li>设置唯一索引去重</li>
+</ul>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://bachman.top">Bach Mar</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://bachman.top/2025/03/05/kafkabase/">https://bachman.top/2025/03/05/kafkabase/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/kafka/">kafka</a></div><div class="post_share"><div class="social-share" data-image="https://s2.loli.net/2023/11/23/VUQN23CaHtA5EoK.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><div class="post-reward"><div class="reward-button"><i class="fas fa-qrcode"></i>Sponsor</div><div class="reward-main"><ul class="reward-all"><li class="reward-item"><a href="https://s2.loli.net/2023/11/24/ljCo7BFt3qYdKNJ.png" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2023/11/24/ljCo7BFt3qYdKNJ.png" alt="wechat"/></a><div class="post-qr-code-desc">wechat</div></li><li class="reward-item"><a href="https://s2.loli.net/2023/11/24/WHzu7xCESfPo5Ac.png" target="_blank"><img class="post-qr-code-img" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2023/11/24/WHzu7xCESfPo5Ac.png" alt="Alipay"/></a><div class="post-qr-code-desc">Alipay</div></li></ul></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2025/03/01/paypal/" title="paypal支付接入"><img class="cover" src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/pic/paypal.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next</div><div class="next_info">paypal支付接入</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2025/03/01/installment-transfer3/" title="简析分期支付实现--优化篇（2）"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-01</div><div class="title">简析分期支付实现--优化篇（2）</div></div></a></div><div><a href="/2025/03/01/installment-transfer2/" title="简析分期支付实现-优化篇"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2025-03-01</div><div class="title">简析分期支付实现-优化篇</div></div></a></div></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comment</span></div><div class="comment-switch"><span class="first-comment">Waline</span><span id="switch-btn"></span><span class="second-comment">Facebook Comments</span></div></div><div class="comment-wrap"><div><div id="waline-wrap"></div></div><div><div class="fb-comments" data-colorscheme="light" data-numposts="10" data-order-by="social" data-width="100%"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="https://s2.loli.net/2023/11/23/VUQN23CaHtA5EoK.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">Bach Mar</div><div class="author-info__description"></div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">16</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">26</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">14</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/Marbacj"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/Marbacj" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:dfgd3992@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">halooooooo!</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#kafka"><span class="toc-number">1.</span> <span class="toc-text">kafka</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#kafka%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%BB%93%E6%9E%84"><span class="toc-number">1.1.</span> <span class="toc-text">kafka的基本结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B6%88%E8%B4%B9%E9%A1%BA%E5%BA%8F"><span class="toc-number">1.2.</span> <span class="toc-text">消费顺序</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E5%88%86%E5%8C%BA%E4%B8%8B%E7%9A%84%E6%B6%88%E8%B4%B9%E9%A1%BA%E5%BA%8F%E7%9A%84%E4%BF%9D%E8%AF%81"><span class="toc-number">1.2.1.</span> <span class="toc-text">多分区下的消费顺序的保证</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#kafka%E6%B6%88%E6%81%AF%E4%B8%A2%E5%A4%B1"><span class="toc-number">1.3.</span> <span class="toc-text">kafka消息丢失</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Producer"><span class="toc-number">1.3.1.</span> <span class="toc-text">Producer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Consumer"><span class="toc-number">1.3.2.</span> <span class="toc-text">Consumer</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#broker"><span class="toc-number">1.3.3.</span> <span class="toc-text">broker</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B6%88%E8%B4%B9%E9%87%8D%E5%A4%8D"><span class="toc-number">1.4.</span> <span class="toc-text">消费重复</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/05/kafkabase/" title="浅入深出kafka--基础篇">浅入深出kafka--基础篇</a><time datetime="2025-03-05T01:28:13.000Z" title="Created 2025-03-05 09:28:13">2025-03-05</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/01/paypal/" title="paypal支付接入"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/pic/paypal.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="paypal支付接入"/></a><div class="content"><a class="title" href="/2025/03/01/paypal/" title="paypal支付接入">paypal支付接入</a><time datetime="2025-03-01T14:17:09.000Z" title="Created 2025-03-01 22:17:09">2025-03-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/01/installment-transfer3/" title="简析分期支付实现--优化篇（2）">简析分期支付实现--优化篇（2）</a><time datetime="2025-03-01T09:39:12.000Z" title="Created 2025-03-01 17:39:12">2025-03-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/01/installment-transfer2/" title="简析分期支付实现-优化篇">简析分期支付实现-优化篇</a><time datetime="2025-03-01T07:20:36.000Z" title="Created 2025-03-01 15:20:36">2025-03-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/02/28/springCloudGateway/" title="简析SpringCloud网关"><img src= "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-lazy-src="/pic/SpringCloudGateway/%E6%88%AA%E5%B1%8F2025-02-27%2017.10.14.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="简析SpringCloud网关"/></a><div class="content"><a class="title" href="/2025/02/28/springCloudGateway/" title="简析SpringCloud网关">简析SpringCloud网关</a><time datetime="2025-02-28T02:27:26.000Z" title="Created 2025-02-28 10:27:26">2025-02-28</time></div></div></div></div></div></div></main><footer id="footer" style="background-image: url('https://s2.loli.net/2023/11/23/uSYBUO4gLjFzDmy.jpg')"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2025 By Bach Mar</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll To Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back To Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instant.page/instantpage.min.js" type="module"></script><script src="https://cdn.jsdelivr.net/npm/vanilla-lazyload/dist/lazyload.iife.min.js"></script><script src="https://cdn.jsdelivr.net/npm/node-snackbar/dist/snackbar.min.js"></script><div class="js-pjax"><script>(() => {
+  const initWaline = () => {
+    const waline = Waline.init(Object.assign({
+      el: '#waline-wrap',
+      serverURL: 'http://waline-for-comment-git-main-marbacjs-projects.vercel.app',
+      pageview: false,
+      dark: 'html[data-theme="dark"]',
+      path: window.location.pathname,
+      comment: false,
+    }, null))
+  }
+
+  const loadWaline = async () => {
+    if (typeof Waline === 'object') initWaline()
+    else {
+      await getCSS('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.css')
+      await getScript('https://cdn.jsdelivr.net/npm/@waline/client/dist/waline.min.js')
+      initWaline()
+    }
+  }
+
+  if ('Waline' === 'Waline' || !true) {
+    if (true) btf.loadComment(document.getElementById('waline-wrap'),loadWaline)
+    else setTimeout(loadWaline, 0)
+  } else {
+    window.loadOtherComment = loadWaline
+  }
+})()</script><script>(()=>{
+  const loadFBComment = () => {
+    document.getElementById('fb-root') ? '' : document.body.insertAdjacentHTML('afterend', '<div id="fb-root"></div>')
+
+    const themeNow = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light'
+    const $fbComment = document.getElementsByClassName('fb-comments')[0]
+    $fbComment.setAttribute('data-colorscheme',themeNow)
+    $fbComment.setAttribute('data-href', 'https://bachman.top/2025/03/05/kafkabase/')
+
+    if (typeof FB === 'object') {
+      FB.XFBML.parse(document.getElementsByClassName('post-meta-commentcount')[0])
+      FB.XFBML.parse(document.getElementById('post-comment'))
+    }
+    else {
+      let ele = document.createElement('script')
+      ele.setAttribute('src','https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v16.0')
+      ele.setAttribute('async', 'true')
+      ele.setAttribute('defer', 'true')
+      ele.setAttribute('crossorigin', 'anonymous')
+      ele.setAttribute('id', 'facebook-jssdk')
+      document.getElementById('fb-root').insertAdjacentElement('afterbegin',ele)
+    }
+  }
+
+  const fbModeChange = theme => {
+    const $fbComment = document.getElementsByClassName('fb-comments')[0]
+    if ($fbComment && typeof FB === 'object') {
+      $fbComment.setAttribute('data-colorscheme',theme)
+      FB.XFBML.parse(document.getElementById('post-comment'))
+    }
+  }
+
+  btf.addGlobalFn('themeChange', fbModeChange, 'facebook_comments')
+
+  if ('Waline' === 'Facebook Comments' || !true) {
+    if (true) btf.loadComment(document.querySelector('#post-comment .fb-comments'), loadFBComment)
+    else loadFBComment()
+  } else {
+    window.loadOtherComment = loadFBComment
+  }
+})()</script></div><div class="aplayer no-destroy" data-id="869483740" data-server="netease" data-type="playlist" data-fixed="true" data-mini="true" data-autoplay="true" data-preload="true" data-mutex="true"> </div><canvas class="fireworks" mobile="true"></canvas><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/fireworks.min.js"></script><script defer="defer" id="fluttering_ribbon" mobile="true" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/canvas-fluttering-ribbon.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = false;
+document.body.addEventListener('input', POWERMODE);
+</script><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/aplayer/dist/APlayer.min.js"></script><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/metingjs/dist/Meting.min.js"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener
+  btf.removeGlobalFnEvent('pjax')
+  btf.removeGlobalFnEvent('themeChange')
+
+  document.getElementById('rightside').classList.remove('rightside-show')
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', e => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="algolia-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="search-wrap"><div id="algolia-search-input"></div><hr/><div id="algolia-search-results"><div id="algolia-hits"></div><div id="algolia-pagination"></div><div id="algolia-info"><div class="algolia-stats"></div><div class="algolia-poweredBy"></div></div></div></div></div><div id="search-mask"></div><script src="https://cdn.jsdelivr.net/npm/algoliasearch/dist/algoliasearch-lite.umd.min.js"></script><script src="https://cdn.jsdelivr.net/npm/instantsearch.js/dist/instantsearch.production.min.js"></script><script src="/js/search/algolia.js"></script></div></div></body></html>
