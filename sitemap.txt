@@ -1,13 +1,13 @@
+https://bachman.top/2025/03/18/debugJVM/
+https://bachman.top/2025/03/14/G1/
 https://bachman.top/2025/03/24/CacheUpdate/
 https://bachman.top/2025/02/14/distributed-transaction/
 https://bachman.top/2025/03/23/distributed-transaction2/
-https://bachman.top/2025/03/18/debugJVM/
 https://bachman.top/2025/03/14/jvm/
 https://bachman.top/2024/12/17/mysqlStudy-lock/
 https://bachman.top/2025/03/07/aop/
 https://bachman.top/2025/03/16/hystrix/
 https://bachman.top/2024/12/23/designModeStudy/
-https://bachman.top/2025/03/14/G1/
 https://bachman.top/2025/03/14/GC/
 https://bachman.top/2025/03/06/spring/
 https://bachman.top/2025/03/09/zerocopy/
