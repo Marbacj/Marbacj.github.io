@@ -1,3 +1,4 @@
+https://bachman.top/2025/04/19/JavaStream/
 https://bachman.top/2025/03/06/spring/
 https://bachman.top/2025/03/18/debugJVM/
 https://bachman.top/2025/03/14/G1/
@@ -63,6 +64,7 @@ https://bachman.top/tags/OperatingSystem/
 https://bachman.top/tags/JVM/
 https://bachman.top/tags/framework/
 https://bachman.top/tags/mysql/
+https://bachman.top/tags/Java/
 https://bachman.top/categories/project/
 https://bachman.top/categories/JWT/
 https://bachman.top/categories/designMode/
@@ -84,3 +86,4 @@ https://bachman.top/categories/JVM/
 https://bachman.top/categories/framework/
 https://bachman.top/categories/framework/Spring-Cloud/
 https://bachman.top/categories/distributed-system/
+https://bachman.top/categories/Java/
